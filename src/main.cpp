@@ -1,13 +1,11 @@
 #include <iostream>
-#include <array>
 
 #include "Tide.h"
-#include "Shell.h"
 
 
 int main()
 {
-    Shell shell;
-    shell.Loop();
+    Tide problem;
+    problem.ShellLoop();
     return 0;
 }
