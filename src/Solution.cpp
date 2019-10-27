@@ -27,20 +27,7 @@ unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 	unsigned int* buf = new unsigned int[size*size];
 	for(unsigned int i = 0; i < size*size; ++i)
 		buf[i] = map[i];
-	for(unsigned int i = 0; i < size; ++i)
-	{
-		for(unsigned int j = 0; j < size; ++j)
-			std::cout << map[i * size + j] << " ";
-		std::cout << std::endl;
-	}
-	QuickSort(buf, 0, size*size);
-	for(unsigned int i = 0; i < size; ++i)
-	{
-		for(unsigned int j = 0; j < size; ++j)
-			std::cout << map[i * size + j] << " ";
-		std::cout << std::endl;
-	}
-
+	Sort(buf, size * size);
 	unsigned int high = size * size - 1, low = 0;
 	if(buf[high] == buf[low])
 	{
@@ -68,7 +55,7 @@ unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 
 bool Solution::CheckTime(unsigned int time)
 {
-
+	if(map[0] > time) return false;
 	struct // 0 - DOWN, 1 - LEFT, 2 - UP, 3 - RIGHT
 	{
 		unsigned int direction;
@@ -112,20 +99,13 @@ void Swap(unsigned int& a, unsigned int& b)
 	b = swap;
 }
 
-void Solution::QuickSort(unsigned int* buf, unsigned int beg, unsigned int end)
-{//first element is the pivot
-	if(beg == end) return;
-	std::cout << "XD";
-	unsigned int firstbig = beg + 1;
-	for(unsigned int i = beg + 1; i <= end; ++i)
+void Solution::Sort(unsigned int* buf, unsigned int size)
+{
+	for(unsigned int i = 0; i < size; ++i)
 	{
-		if(buf[i] < buf[beg])
+		for(unsigned int j = i + 1; j < size; ++j)
 		{
-			Swap(buf[i], buf[firstbig]);
-			++firstbig;
+			if(buf[i] > buf[j]) Swap(buf[i], buf[j]);
 		}
 	}
-	Swap(buf[beg], buf[firstbig - 1]);
-	QuickSort(buf, beg, firstbig - 1);
-	QuickSort(buf, firstbig, end);
 }
