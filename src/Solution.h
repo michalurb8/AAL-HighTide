@@ -5,7 +5,7 @@ class Solution
 {
 	unsigned int size;
 	unsigned int* map;
-	void Sort(unsigned int* buf);
+	void QuickSort(unsigned int* buf, unsigned int beg, unsigned int end);
 	bool CheckTime(unsigned int time);
 	bool StepPossible(int x, int y , unsigned int time);
 public:

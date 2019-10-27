@@ -27,7 +27,20 @@ unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 	unsigned int* buf = new unsigned int[size*size];
 	for(unsigned int i = 0; i < size*size; ++i)
 		buf[i] = map[i];
-	Sort(buf);
+	for(unsigned int i = 0; i < size; ++i)
+	{
+		for(unsigned int j = 0; j < size; ++j)
+			std::cout << map[i * size + j] << " ";
+		std::cout << std::endl;
+	}
+	QuickSort(buf, 0, size*size);
+	for(unsigned int i = 0; i < size; ++i)
+	{
+		for(unsigned int j = 0; j < size; ++j)
+			std::cout << map[i * size + j] << " ";
+		std::cout << std::endl;
+	}
+
 	unsigned int high = size * size - 1, low = 0;
 	if(buf[high] == buf[low])
 	{
@@ -92,17 +105,27 @@ bool Solution::StepPossible(int x, int y, unsigned int time)
 	return true;
 }
 
-void Solution::Sort(unsigned int* buf) //bubble sort, fix this
+void Swap(unsigned int& a, unsigned int& b)
 {
-	unsigned int swap;
-	for(unsigned int i = 0; i < size * size; ++i)
-		for(unsigned int j = i + 1; j < size * size; ++j)
+	unsigned int swap = a;
+	a = b;
+	b = swap;
+}
+
+void Solution::QuickSort(unsigned int* buf, unsigned int beg, unsigned int end)
+{//first element is the pivot
+	if(beg == end) return;
+	std::cout << "XD";
+	unsigned int firstbig = beg + 1;
+	for(unsigned int i = beg + 1; i <= end; ++i)
+	{
+		if(buf[i] < buf[beg])
 		{
-			if(buf[i] > buf[j])
-			{
-				swap = buf[i];	
-				buf[i] = buf[j];	
-				buf[j] = swap;
-			}
+			Swap(buf[i], buf[firstbig]);
+			++firstbig;
 		}
+	}
+	Swap(buf[beg], buf[firstbig - 1]);
+	QuickSort(buf, beg, firstbig - 1);
+	QuickSort(buf, firstbig, end);
 }

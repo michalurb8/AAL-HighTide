@@ -14,5 +14,5 @@ Solution.o: Solution.cpp Solution.h
 clean:
 	rm -f *.o exe
 
-run:
+run: default
 	./exe
