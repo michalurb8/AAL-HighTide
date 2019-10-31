@@ -4,17 +4,23 @@
 
 void Tide::LoadFromFile(std::string fileName)
 {
-	dataCorrect = true;
+	dataCorrect = false;
 	std::ifstream input(fileName);
+	if(input.fail())
+	{
+		std::cout << "Such a file does not exist." << std::endl;
+		return;
+	}
 
 	if(input.eof()) 
 	{
-		dataCorrect = false;
 		std::cout << "File Empty" << std::endl;
 	}
 
 	input >> size;
 	Allocate(size);
+
+	dataCorrect = true;
 
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
@@ -90,6 +96,40 @@ unsigned int Tide::Brute(unsigned int size, unsigned int* map)
 	return problem.Brute(size, map);
 }
 
+unsigned int Tide::GetInt(std::string prompt)
+{
+	unsigned int temp;
+	std::cout << prompt << std::endl;
+	std::cin >> temp;
+	while(std::cin.fail())
+	{
+		std::cout << "Error, not an integer" << std::endl;
+		std::cout << prompt << std::endl;
+		std::cin.clear();
+		std::cin.ignore();
+		std::cin >> temp;
+	}
+	return temp;
+}
+
+void Tide::Generate()
+{
+	srand(time(NULL));
+	rand(); rand(); rand(); rand();
+	std::ofstream output("other.txt");
+	unsigned int size = 0, range = 0;
+	size = GetInt("Input the size of the map:");
+	range = GetInt("Input the range of the map height values:");
+	output << size << std::endl;
+	for(unsigned int i = 0; i < size; ++i)
+	{
+		for(unsigned int j = 0; j < size; ++j)
+			output << rand()%range + 1 << " ";
+		output << std::endl;
+	}
+	output.close();
+}
+
 Tide::Tide()
 {
 	size = 1;
@@ -115,25 +155,29 @@ void Tide::ShellResolve(char choice)
             "   r - Reset loaded data" << std::endl <<
             "   s - Solve and display" << std::endl <<
             "   b - Brute force solution" << std::endl <<
+            "   g - Generate random data to other.txt" << std::endl <<
             "   q - Exit" << std::endl;
-            return;
-        case '1':
-            LoadFromFile();
-            return;
-        case '2':
-	    LoadFromFile("other.txt");
+			return;
+		case '1':
+			LoadFromFile();
+			return;
+		case '2':
+	    	LoadFromFile("other.txt");
             return;
         case '3':
-	    LoadManually();
+	    	LoadManually();
             return;
         case 'p':
-	    Print();
+	    	Print();
             return;
-        case 'r':
-	    Free();
-            return;
-        case 's':
-	    std::cout << Solve(size, map) << std::endl;
+		case 'r':
+			Free();
+			return;
+		case 'g':
+			Generate();
+			return;
+		case 's':
+	    	std::cout << Solve(size, map) << std::endl;
             return;
         case 'b':
 	    std::cout << Brute(size, map) << std::endl;

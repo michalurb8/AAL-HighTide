@@ -1,4 +1,4 @@
-CF = -g -Wall -pedantic -std=c++11
+CF = -Wall -pedantic -std=c++11 -O3
 
 default: main.o Tide.o Solution.o
 	g++ main.o Tide.o Solution.o -o exe
@@ -11,6 +11,7 @@ Tide.o: Tide.cpp Tide.h
 
 Solution.o: Solution.cpp Solution.h
 	g++ $(CF) -c Solution.cpp -o Solution.o
+
 clean:
 	rm -f *.o exe
 

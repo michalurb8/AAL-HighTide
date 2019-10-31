@@ -5,20 +5,15 @@ unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 {
 	this->size = size;
 	this->map = map;
-	unsigned int high = 0, low = -1, time;
-	for(unsigned int i = 0; i < size * size; ++i)
-	{
-		if(map[i] > high) high = map[i];
-		if(map[i] < low) low = map[i];
-	}
-	if(high == low) return high;
-	for(time = low; time <= high; ++time)
+	unsigned int time = map[0];
+	if(map[0] < map[size * size -1]) time = map[size * size - 1];
+	while(1)
 	{
 		if(CheckTime(time)) return time;
+		++time;
 	}
 	return -1;
 }
-
 
 unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 {
@@ -27,7 +22,7 @@ unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 	unsigned int* buf = new unsigned int[size*size];
 	for(unsigned int i = 0; i < size*size; ++i)
 		buf[i] = map[i];
-	Sort(buf, size * size);
+	Sort(buf, 0, size * size - 1);
 	unsigned int high = size * size - 1, low = 0;
 	if(buf[high] == buf[low])
 	{
@@ -99,13 +94,29 @@ void Swap(unsigned int& a, unsigned int& b)
 	b = swap;
 }
 
-void Solution::Sort(unsigned int* buf, unsigned int size)
+void Solution::Sort(unsigned int* buf, unsigned int beg, unsigned int end)
 {
-	for(unsigned int i = 0; i < size; ++i)
+	if(beg == end) return;
+	if(beg + 1 == end)
 	{
-		for(unsigned int j = i + 1; j < size; ++j)
+		if(buf[beg] > buf[end]) Swap(buf[beg], buf[end]);
+		return;
+	}
+
+	if(buf[(beg + end)/2] > buf[end]) Swap(buf[(beg + end)/2], buf[end]);
+	if(buf[beg] > buf[(beg + end)/2]) Swap(buf[beg], buf[(beg + end)/2]); //Setting pivot to median of three
+	if(buf[(beg + end)/2] < buf[end]) Swap(buf[(beg + end)/2], buf[end]); // Moving pivot to the end
+
+	unsigned int firstbig = beg;
+	for(unsigned int i = beg; i < end; ++i)
+	{
+		if(buf[i] <= buf[end])
 		{
-			if(buf[i] > buf[j]) Swap(buf[i], buf[j]);
+			Swap(buf[i], buf[firstbig]);
+			++firstbig;
 		}
 	}
+	Swap(buf[firstbig], buf[end]);
+	if(beg < firstbig - 1) Sort(buf, beg, firstbig - 1);
+	if(firstbig + 1 < end) Sort(buf, firstbig + 1, end);
 }
