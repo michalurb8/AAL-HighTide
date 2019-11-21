@@ -1,5 +1,6 @@
 #include "Solution.h"
 #include <iostream>
+#include <chrono>
 
 unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 {
@@ -14,38 +15,35 @@ unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 	}
 	return -1;
 }
-
+//DUPA WYWWALIC SOLVE, DAC TYLKO BRUTE ZMIENIONY I DODAC INNY BRUTE >:CCCCCCC
 unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 {
 	this->size = size;
 	this->map = map;
-	unsigned int* buf = new unsigned int[size*size];
-	for(unsigned int i = 0; i < size*size; ++i)
-		buf[i] = map[i];
-	Sort(buf, 0, size * size - 1);
-	unsigned int high = size * size - 1, low = 0;
-	if(buf[high] == buf[low])
+	unsigned int* buf = new unsigned int[size * size - 1];
+	for(unsigned int i = 0; i < size * size - 1; ++i)
 	{
-		high = buf[0];
-		delete[] buf;
-		return high;
+		buf[i] = map[i];
 	}
-	unsigned int index = (high + low)/2, time = buf[index];
+	unsigned int low; //first index in ordered map
+	low = 0;
+	unsigned int high; //end index in ordered map
+	high = size * size - 1;  
+
+	unsigned int current = high/2; //set current to the current position in sorted map
+	unsigned int time = GetNth(buf, 0, size * size - 1, current);//set time to the median of the whole map
+
 	while(high - low > 1)
 	{
-		bool passable = false;
-		passable = CheckTime(time);
-		if(passable)
-			high = index;
+		if(CheckTime(time))
+			high = current;
 		else
-			low = index;
-		index = (high + low)/2;
-		time = buf[index];
+			low = current;
+		current = (high + low)/2;
+		time = GetNth(buf, 0, size * size - 1, current);
 	}
-	
-	index = buf[high];
-	delete[] buf;
-	return index;
+	current = buf[high];
+	return current;
 }
 
 bool Solution::CheckTime(unsigned int time)
@@ -93,21 +91,20 @@ void Swap(unsigned int& a, unsigned int& b)
 	a = b;
 	b = swap;
 }
-
-void Solution::Sort(unsigned int* buf, unsigned int beg, unsigned int end)
+unsigned int Solution::GetNth(unsigned int* buf, unsigned int beg, unsigned int end, unsigned int index)
 {
-	if(beg == end) return;
+    if(beg >= end) return buf[index];
 	if(beg + 1 == end)
 	{
 		if(buf[beg] > buf[end]) Swap(buf[beg], buf[end]);
-		return;
+		return buf[index];
 	}
 
 	if(buf[(beg + end)/2] > buf[end]) Swap(buf[(beg + end)/2], buf[end]);
 	if(buf[beg] > buf[(beg + end)/2]) Swap(buf[beg], buf[(beg + end)/2]); //Setting pivot to median of three
 	if(buf[(beg + end)/2] < buf[end]) Swap(buf[(beg + end)/2], buf[end]); // Moving pivot to the end
 
-	unsigned int firstbig = beg;
+	unsigned int firstbig = beg; //firstbig is the index of the first element bigger than the pivot (so far)
 	for(unsigned int i = beg; i < end; ++i)
 	{
 		if(buf[i] <= buf[end])
@@ -116,7 +113,10 @@ void Solution::Sort(unsigned int* buf, unsigned int beg, unsigned int end)
 			++firstbig;
 		}
 	}
-	Swap(buf[firstbig], buf[end]);
-	if(beg < firstbig - 1) Sort(buf, beg, firstbig - 1);
-	if(firstbig + 1 < end) Sort(buf, firstbig + 1, end);
+    
+	Swap(buf[firstbig], buf[end]); //inserting pivot back to its place, to index firstbig
+
+    if(firstbig == index) return buf[index];
+	if(firstbig < index) return GetNth(buf, firstbig + 1, end, index);
+	else return GetNth(buf, beg, firstbig - 1, index);
 }
