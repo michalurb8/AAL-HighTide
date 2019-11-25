@@ -75,17 +75,6 @@ void Tide::Print()
 		std::cout << std::endl;
 	}
 }
-
-unsigned int Tide::Solve(unsigned int size, unsigned int* map)
-{
-	if(!dataCorrect)
-	{
-		std::cout << "Data not loaded, returning ";
-		return 0;
-	}
-	return problem.Solve(size, map);
-}
-
 unsigned int Tide::Brute(unsigned int size, unsigned int* map)
 {
 	if(!dataCorrect)
@@ -94,6 +83,15 @@ unsigned int Tide::Brute(unsigned int size, unsigned int* map)
 		return 0;
 	}
 	return problem.Brute(size, map);
+}
+unsigned int Tide::Solve(unsigned int size, unsigned int* map)
+{
+	if(!dataCorrect)
+	{
+		std::cout << "Data not loaded, returning ";
+		return 0;
+	}
+	return problem.Solve(size, map);
 }
 
 unsigned int Tide::GetInt(std::string prompt)
@@ -179,8 +177,8 @@ void Tide::ShellResolve(char choice)
 		case 's':
 	    	std::cout << Solve(size, map) << std::endl;
             return;
-        case 'b':
-	    std::cout << Brute(size, map) << std::endl;
+		case 'b':
+	    	std::cout << Brute(size, map) << std::endl;
             return;
         default:
             std::cout << "Unknown command. Try 'h' for help." << std::endl;

@@ -5,7 +5,6 @@ class Solution
 {
 	unsigned int size;
 	unsigned int* map;
-	unsigned int GetNth(unsigned int* buf, unsigned int beg, unsigned int end, unsigned int index);
 	bool CheckTime(unsigned int time);
 	bool StepPossible(int x, int y , unsigned int time);
 public:
