@@ -24,39 +24,39 @@ void Tide::LoadFromFile(std::string fileName)
 		return;
 	}
 
-	if(input.eof()) 
-	{
-		std::cout << "File Empty" << std::endl;
-	}
-
 	input >> size;
 	Allocate(size);
 
-	dataCorrect = true;
-
+	if(size == 0)
+	{
+			input.close();
+			std::cout << "Error loading data" << std::endl;
+			return;
+	}
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
 		input >> map[i];	
 		if(input.eof())
 		{
-			dataCorrect = false;
-			break;
+			input.close();
+			std::cout << "Error loading data" << std::endl;
+			return;
 		}
 	}
 
 	input.close();
-	if(dataCorrect) std::cout << "Data loaded successfully" << std::endl;
-	else std::cout << "Error loading data" << std::endl;
+	dataCorrect = true;
+	std::cout << "Data loaded successfully" << std::endl;
 }
 
 void Tide::LoadManually()
 {
 	dataCorrect = true;
-	size = GetInt("Input map's size, N:");
+	size = GetInt("Input map's size, N:", maxsize);
 	Allocate(size);
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
-		map[i] = GetInt("Input next element in the map:");
+		map[i] = GetInt("Input next element in the map:", maxheight);
 	}
 }
 
@@ -64,12 +64,6 @@ void Tide::Allocate(unsigned int size)
 {
 	delete[] map;
 	map = new unsigned int[size * size];
-}
-
-void Tide::Free()
-{
-	delete[] map;
-	map = new unsigned int[1];
 	dataCorrect = false;
 }
 
@@ -87,37 +81,40 @@ void Tide::Print()
 		std::cout << std::endl;
 	}
 }
-unsigned int Tide::Brute(unsigned int size, unsigned int* map)
+
+unsigned int Tide::Solve(unsigned int size, unsigned int* map, bool runOptimal)
 {
 	if(!dataCorrect)
 	{
 		std::cout << "Data not loaded, returning ";
 		return 0;
 	}
-	return problem.Brute(size, map);
-}
-unsigned int Tide::Solve(unsigned int size, unsigned int* map)
-{
-	if(!dataCorrect)
+	else if(size == 0)
 	{
-		std::cout << "Data not loaded, returning ";
+		std::cout << "Error, map size ";
 		return 0;
 	}
-	return problem.Solve(size, map);
+	if(runOptimal)
+		return problem.Solve(size, map);
+	else
+		return problem.Brute(size, map);
 }
 
-unsigned int Tide::GetInt(std::string prompt)
+unsigned int Tide::GetInt(std::string prompt, unsigned int max)
 {
-	unsigned int temp;
-	std::cout << prompt << std::endl;
-	std::cin >> temp;
-	while(std::cin.fail())
+	unsigned int temp = 0;
+	bool isCorrect = false;
+	while(!isCorrect)
 	{
-		std::cout << "Error, not an integer" << std::endl;
 		std::cout << prompt << std::endl;
+		std::cin >> temp;
 		std::cin.clear();
 		std::cin.ignore();
-		std::cin >> temp;
+		if(std::cin.fail())
+			std::cout << "Error, not an integer" << std::endl;
+		else if(temp > max)
+			std::cout << "Error, integer too big" << std::endl;
+		else isCorrect = true;
 	}
 	return temp;
 }
@@ -126,23 +123,30 @@ void Tide::Generate()
 {
 	srand(time(NULL));
 	rand(); rand(); rand(); rand();
-	std::ofstream output("other.txt");
+
 	unsigned int size = 0, range = 0;
-	size = GetInt("Input the size of the map:");
-	range = GetInt("Input the range of the map height values:");
+	size = GetInt("Input the size of the map:", maxsize);
+	range = GetInt("Input the range of the map height values:", maxheight);
+
+	std::ofstream output("other.txt");
 	output << size << std::endl;
 	unsigned int* buffer = new unsigned int[size * size];
 	for(unsigned int i = 0; i < size*size; ++i)
+	{
 		buffer[i] = rand()%range;
+	}
 	for(unsigned int i = 0; i < size; ++i)
 	{
 		for(unsigned int j = 0; j < size; ++j)
+		{
 			output << buffer[i * size + j] << " ";
+		}
 		output << std::endl;
 	}
 	delete[] buffer;
 	output.close();
 }
+
 void Tide::ShellResolve(char choice)
 {
     switch(choice)
@@ -158,7 +162,6 @@ void Tide::ShellResolve(char choice)
             "   3 - Load data manually" << std::endl << std::endl <<
             "   h - Display this help message" << std::endl <<
             "   p - Print loaded data" << std::endl <<
-            "   r - Reset loaded data" << std::endl <<
             "   s - Solve and display" << std::endl <<
             "   b - Brute force solution" << std::endl <<
             "   g - Generate random data to other.txt" << std::endl <<
@@ -176,17 +179,14 @@ void Tide::ShellResolve(char choice)
         case 'p':
 	    	Print();
             return;
-		case 'r':
-			Free();
-			return;
 		case 'g':
 			Generate();
 			return;
 		case 's':
-	    	std::cout << Solve(size, map) << std::endl;
+	    	std::cout << Solve(size, map, true) << std::endl;
             return;
 		case 'b':
-	    	std::cout << Brute(size, map) << std::endl;
+	    	std::cout << Solve(size, map, false) << std::endl;
             return;
         default:
             std::cout << "Unknown command. Try 'h' for help." << std::endl;
