@@ -2,6 +2,18 @@
 #include <fstream>
 #include <iostream>
 
+Tide::Tide()
+{
+	size = 1;
+	map = new unsigned int[1];
+	dataCorrect = false;
+}
+
+Tide::~Tide()
+{
+	delete[] map;
+}
+
 void Tide::LoadFromFile(std::string fileName)
 {
 	dataCorrect = false;
@@ -40,11 +52,11 @@ void Tide::LoadFromFile(std::string fileName)
 void Tide::LoadManually()
 {
 	dataCorrect = true;
-	std::cin >> size;
+	size = GetInt("Input map's size, N:");
 	Allocate(size);
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
-		std::cin >> map[i];	
+		map[i] = GetInt("Input next element in the map:");
 	}
 }
 
@@ -119,22 +131,18 @@ void Tide::Generate()
 	size = GetInt("Input the size of the map:");
 	range = GetInt("Input the range of the map height values:");
 	output << size << std::endl;
+	unsigned int* buffer = new unsigned int[size * size];
+	for(unsigned int i = 0; i < size*size; ++i)
+		buffer[i] = rand()%range;
 	for(unsigned int i = 0; i < size; ++i)
 	{
 		for(unsigned int j = 0; j < size; ++j)
-			output << rand()%range + 1 << " ";
+			output << buffer[i * size + j] << " ";
 		output << std::endl;
 	}
+	delete[] buffer;
 	output.close();
 }
-
-Tide::Tide()
-{
-	size = 1;
-	map = new unsigned int[1];
-	dataCorrect = false;
-}
-
 void Tide::ShellResolve(char choice)
 {
     switch(choice)

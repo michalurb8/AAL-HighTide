@@ -27,6 +27,7 @@ class Tide
 public:
     void ShellLoop();
     Tide();
+    ~Tide();
 };
 
 #endif

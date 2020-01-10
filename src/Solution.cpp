@@ -4,8 +4,33 @@
 
 unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 {
-	std::cout << "NO BRUTEFORCE AVAILABLE NOW" << std::endl;
-	return 1001;
+	this->size = size;
+	this->map = map;
+
+	unsigned int low = 0; //highest not passable time found so far
+	if(low < map[0]) low = map[0] - 1; // is the start tile
+	if(low < map[size * size - 1]) low = map[size * size - 1] - 1; //or the end tile if bigger
+
+	unsigned int high = 0; //lowest passable time found so far 
+	unsigned int temp = 0; //temporary variable to find a value that can be passed
+
+	while(high == 0)//double the value of low until high is set
+	{
+		temp = (1.5) * low + 1;	
+		if(CheckTime(temp)) high = temp;
+		else low = temp;
+	}
+
+	unsigned int time = (high + low)/2;
+	while(high - low > 1)//narrow the lower and upper bound until the solution is found
+	{
+		if(CheckTime(time))
+			high = time;
+		else
+			low = time;
+		time = (high + low)/2;
+	}
+	return high;
 }
 unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 {
@@ -39,8 +64,8 @@ bool Solution::CheckTime(unsigned int time)
 		unsigned int direction;
 		void TurnRight() { direction = (direction + 1)%4; }
 		void TurnLeft() { direction = (direction + 3)%4; }
-		int dx() { return direction%2 ? direction - 2 : 0; }
-		int dy() { return direction%2 ? 0 : 1 - direction; }
+		int dx() { return direction%2 ? direction - 2 : 0; } //x coordinate of one step in this direction
+		int dy() { return direction%2 ? 0 : 1 - direction; } //y coordinate of one step in this direction
 	} dir; //temporary direction strucure to move on the map
 	dir.direction = 0; //the direction is set to down
 	int x = 0, y = 0;
