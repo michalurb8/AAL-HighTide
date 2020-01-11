@@ -1,9 +1,11 @@
+//Michal Urbanski
+//Zeglowanie w czasie przyplywu
 #include "Solution.h"
-#include <iostream>
-#include <chrono>
+#include "Timer.h"
 
 unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 {
+	Timer bruteTimer("brute solution timer");
 	this->size = size;
 	this->map = map;
 
@@ -14,7 +16,7 @@ unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 	unsigned int high = 0; //lowest passable time found so far 
 	unsigned int temp = 0; //temporary variable to find a value that can be passed
 
-	while(high == 0)//double the value of low until high is set
+	while(high == 0) //double the value of low until high is set
 	{
 		temp = (1.5) * low + 1;	
 		if(CheckTime(temp)) high = temp;
@@ -34,6 +36,7 @@ unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 }
 unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 {
+	Timer bruteTimer("regular solution timer");
 	this->size = size;
 	this->map = map;
 

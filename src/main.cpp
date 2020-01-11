@@ -1,7 +1,7 @@
+//Michal Urbanski
+//Zeglowanie w czasie przyplywu
 #include <iostream>
-
 #include "Tide.h"
-
 
 int main()
 {

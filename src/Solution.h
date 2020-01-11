@@ -1,5 +1,6 @@
-#ifndef SOLUTION_H
-#define SOLUTION_H
+//Michal Urbanski
+//Zeglowanie w czasie przyplywu
+#pragma once
 
 class Solution
 {
@@ -11,5 +12,3 @@ public:
 	unsigned int Solve(unsigned int size, unsigned int* map);
 	unsigned int Brute(unsigned int size, unsigned int* map);
 };
-
-#endif

@@ -1,9 +1,12 @@
+//Michal Urbanski
+//Zeglowanie w czasie przyplywu
 #include "Tide.h"
 #include <fstream>
 #include <iostream>
 
 Tide::Tide()
 {
+	srand(time(NULL));
 	size = 1;
 	map = new unsigned int[1];
 	dataCorrect = false;
@@ -48,7 +51,6 @@ void Tide::LoadFromFile(std::string fileName)
 			return;
 		}
 	}
-
 	input.close();
 	dataCorrect = true;
 	std::cout << "Data loaded successfully" << std::endl;
@@ -87,7 +89,7 @@ void Tide::Print()
 	}
 }
 
-unsigned int Tide::Solve(unsigned int size, unsigned int* map, bool runOptimal)
+unsigned int Tide::Solve(unsigned int* map, bool runOptimal)
 {
 	if(!dataCorrect)
 	{
@@ -103,6 +105,28 @@ unsigned int Tide::Solve(unsigned int size, unsigned int* map, bool runOptimal)
 		return problem.Solve(size, map);
 	else
 		return problem.Brute(size, map);
+}
+
+void Tide::LogN(bool runOptimal)
+{
+	std::string fileName = "./../results/";
+	unsigned int iterations = GetInt("Input the number of iterations:", maxiter);
+	unsigned int newSize = GetInt("Input the size of the map:", maxsize);
+	unsigned int range = GetInt("Input the range of the map height values:", maxheight);
+	fileName += "size_";
+	fileName += std::to_string(newSize);
+	fileName += "_range_";
+	fileName += std::to_string(range);
+	fileName += "_iter_";
+	fileName += std::to_string(iterations);
+	std::ofstream output(fileName);
+	for(unsigned int i = 0; i < iterations; ++i)
+	{
+		Generate(newSize, range);
+		LoadFromFile("default.txt");
+		output << Solve(map, runOptimal) << std::endl;
+	}
+	output.close();
 }
 
 unsigned int Tide::GetInt(std::string prompt, unsigned int max)
@@ -126,14 +150,13 @@ unsigned int Tide::GetInt(std::string prompt, unsigned int max)
 	return temp;
 }
 
-void Tide::Generate()
+void Tide::Generate(unsigned int size, unsigned int range)
 {
-	srand(time(NULL));
-	rand(); rand(); rand(); rand();
-
-	unsigned int size = 0, range = 0;
-	size = GetInt("Input the size of the map:", maxsize);
-	range = GetInt("Input the range of the map height values:", maxheight);
+	if(size == 0 || range == 0)
+	{
+		size = GetInt("Input the size of the map:", maxsize);
+		range = GetInt("Input the range of the map height values:", maxheight);
+	}
 
 	std::ofstream output("default.txt");
 	output << size << std::endl;
@@ -190,11 +213,14 @@ void Tide::ShellResolve(char choice)
 			Generate();
 			return;
 		case 's':
-	    	std::cout << Solve(size, map, true) << std::endl;
+	    	std::cout << Solve(map, true) << std::endl;
             return;
 		case 'b':
-	    	std::cout << Solve(size, map, false) << std::endl;
+	    	std::cout << Solve(map, false) << std::endl;
             return;
+		case 'l':
+			LogN(true);
+			return;
         default:
             std::cout << "Unknown command. Try 'h' for help." << std::endl;
     }

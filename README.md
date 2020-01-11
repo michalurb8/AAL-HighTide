@@ -1,4 +1,4 @@
-TODO dokumentacja, pomiary czasu
+TODO dokumentacja, pomiary czasu, add newlines
 
 # Problem - Żeglowanie w czasie przypływu
 ## Michał Urbański
