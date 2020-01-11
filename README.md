@@ -4,7 +4,7 @@ TODO dokumentacja, pomiary czasu
 ## Michał Urbański
 
 ## Program umożliwia wykonywanie następujących poleceń:
-h - Display help 
+h - Display help <br /> 
 1 - Load data from data.txt file
 2 - Load data from any .txt file
 3 - Load data manually
