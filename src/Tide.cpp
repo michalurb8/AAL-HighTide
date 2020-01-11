@@ -16,6 +16,11 @@ Tide::~Tide()
 
 void Tide::LoadFromFile(std::string fileName)
 {
+	if(fileName == "")
+	{
+		std::cout << "Input file's name:" << std::endl;
+		std::cin >> fileName;
+	}
 	dataCorrect = false;
 	std::ifstream input(fileName);
 	if(input.fail())
@@ -108,10 +113,12 @@ unsigned int Tide::GetInt(std::string prompt, unsigned int max)
 	{
 		std::cout << prompt << std::endl;
 		std::cin >> temp;
-		std::cin.clear();
-		std::cin.ignore();
 		if(std::cin.fail())
+		{
 			std::cout << "Error, not an integer" << std::endl;
+			std::cin.clear();
+			std::cin.ignore();
+		}
 		else if(temp > max)
 			std::cout << "Error, integer too big" << std::endl;
 		else isCorrect = true;
@@ -128,7 +135,7 @@ void Tide::Generate()
 	size = GetInt("Input the size of the map:", maxsize);
 	range = GetInt("Input the range of the map height values:", maxheight);
 
-	std::ofstream output("other.txt");
+	std::ofstream output("default.txt");
 	output << size << std::endl;
 	unsigned int* buffer = new unsigned int[size * size];
 	for(unsigned int i = 0; i < size*size; ++i)
@@ -157,21 +164,21 @@ void Tide::ShellResolve(char choice)
         case 'h':
             std::cout << std::endl <<
             "Available commands:" << std::endl << std::endl <<
-            "   1 - Load data from data.txt file" << std::endl <<
+            "   1 - Load data from default.txt file" << std::endl <<
             "   2 - Load data from any .txt file" << std::endl <<
             "   3 - Load data manually" << std::endl << std::endl <<
             "   h - Display this help message" << std::endl <<
             "   p - Print loaded data" << std::endl <<
             "   s - Solve and display" << std::endl <<
             "   b - Brute force solution" << std::endl <<
-            "   g - Generate random data to other.txt" << std::endl <<
+            "   g - Generate random data to example.txt" << std::endl <<
             "   q - Exit" << std::endl;
 			return;
 		case '1':
-			LoadFromFile();
+			LoadFromFile("default.txt");
 			return;
 		case '2':
-	    	LoadFromFile("other.txt");
+	    	LoadFromFile("");
             return;
         case '3':
 	    	LoadManually();
@@ -202,7 +209,10 @@ void Tide::ShellLoop()
         std::string temp;
         std::cout << std::endl << "> ";
         std::cin >> temp;
-        choice =  temp[0];
+		if(temp.length() > 1)
+			choice = 0;
+		else
+        	choice =  temp[0];
         ShellResolve(choice);
     } while(choice != 'q');
 }
