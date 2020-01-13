@@ -16,7 +16,7 @@ class Tide
 
     bool dataCorrect;
     void ShellResolve(char choice);
-    unsigned int GetInt(std::string prompt, unsigned int max);
+    unsigned int GetInt(std::string prompt, unsigned int max, bool canBeZero);
 
     void LoadFromFile(std::string fileName = "data.txt");
     void LoadManually();
@@ -25,8 +25,9 @@ class Tide
 
     void Print();
     void Generate(unsigned int size = 0, unsigned int range = 0);
-    unsigned int Solve(unsigned int* map, bool runOptimal);
-    void LogN(bool runOptimal);
+    unsigned int Solve(unsigned int* map);
+    void LogN(unsigned int iterations = 0, unsigned int newSize = 0, unsigned int range = 0);
+    void SolveN(unsigned int iterations = 0, unsigned int newSize = 0, unsigned int range = 0);
     Solution problem;
 public:
     void ShellLoop();

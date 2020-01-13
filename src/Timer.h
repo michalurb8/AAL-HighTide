@@ -8,9 +8,10 @@
 class Timer
 {
     bool running;
+    std::string name;
     std::chrono::time_point<std::chrono::system_clock> start, end;
-    void Stop();
 public:
     Timer(std::string timerName);
     ~Timer();
+    float Stop();
 };

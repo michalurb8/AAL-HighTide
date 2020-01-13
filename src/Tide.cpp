@@ -3,6 +3,7 @@
 #include "Tide.h"
 #include <fstream>
 #include <iostream>
+#include "Timer.h"
 
 Tide::Tide()
 {
@@ -28,7 +29,7 @@ void Tide::LoadFromFile(std::string fileName)
 	std::ifstream input(fileName);
 	if(input.fail())
 	{
-		std::cout << "Such a file does not exist." << std::endl;
+		std::cout << "Such a file does not exist" << std::endl;
 		return;
 	}
 
@@ -38,7 +39,7 @@ void Tide::LoadFromFile(std::string fileName)
 	if(size == 0)
 	{
 			input.close();
-			std::cout << "Error loading data" << std::endl;
+			std::cout << "File error, map size cannot be zero" << std::endl;
 			return;
 	}
 	for(unsigned int i = 0; i < size * size; ++i)
@@ -47,23 +48,22 @@ void Tide::LoadFromFile(std::string fileName)
 		if(input.eof())
 		{
 			input.close();
-			std::cout << "Error loading data" << std::endl;
+			std::cout << "File error, dimensions do not match" << std::endl;
 			return;
 		}
 	}
 	input.close();
 	dataCorrect = true;
-	std::cout << "Data loaded successfully" << std::endl;
 }
 
 void Tide::LoadManually()
 {
 	dataCorrect = true;
-	size = GetInt("Input map's size, N:", maxsize);
+	size = GetInt("Input map's size, N:", maxsize, false);
 	Allocate(size);
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
-		map[i] = GetInt("Input next element in the map:", maxheight);
+		map[i] = GetInt("Input next element in the map:", maxheight, true);
 	}
 }
 
@@ -89,7 +89,7 @@ void Tide::Print()
 	}
 }
 
-unsigned int Tide::Solve(unsigned int* map, bool runOptimal)
+unsigned int Tide::Solve(unsigned int* map)
 {
 	if(!dataCorrect)
 	{
@@ -101,18 +101,18 @@ unsigned int Tide::Solve(unsigned int* map, bool runOptimal)
 		std::cout << "Error, map size ";
 		return 0;
 	}
-	if(runOptimal)
-		return problem.Solve(size, map);
-	else
-		return problem.Brute(size, map);
+	return problem.Solve(size, map);
 }
 
-void Tide::LogN(bool runOptimal)
+void Tide::LogN(unsigned int iterations, unsigned int newSize, unsigned int range)
 {
 	std::string fileName = "./../results/";
-	unsigned int iterations = GetInt("Input the number of iterations:", maxiter);
-	unsigned int newSize = GetInt("Input the size of the map:", maxsize);
-	unsigned int range = GetInt("Input the range of the map height values:", maxheight);
+	if(iterations == 0 || newSize == 0 || range == 0)
+	{
+		iterations = GetInt("Input the number of iterations:", maxiter, false);
+		newSize = GetInt("Input the size of the map:", maxsize, false);
+		range = GetInt("Input the range of the map height values:", maxheight, false);
+	}
 	fileName += "size_";
 	fileName += std::to_string(newSize);
 	fileName += "_range_";
@@ -120,16 +120,25 @@ void Tide::LogN(bool runOptimal)
 	fileName += "_iter_";
 	fileName += std::to_string(iterations);
 	std::ofstream output(fileName);
-	for(unsigned int i = 0; i < iterations; ++i)
 	{
-		Generate(newSize, range);
-		LoadFromFile("default.txt");
-		output << Solve(map, runOptimal) << std::endl;
+		Timer timer("Solve in a loop");
+		SolveN(iterations, newSize, range);
+		output << timer.Stop() << " ";
 	}
 	output.close();
 }
 
-unsigned int Tide::GetInt(std::string prompt, unsigned int max)
+void Tide::SolveN(unsigned int iterations, unsigned int newSize, unsigned int range)
+{
+	for(unsigned int i = 0; i < iterations; ++i)
+	{
+		Generate(newSize, range);
+		LoadFromFile("default.txt");
+		Solve(map);
+	}
+}
+
+unsigned int Tide::GetInt(std::string prompt, unsigned int max, bool canBeZero)
 {
 	unsigned int temp = 0;
 	bool isCorrect = false;
@@ -145,6 +154,8 @@ unsigned int Tide::GetInt(std::string prompt, unsigned int max)
 		}
 		else if(temp > max)
 			std::cout << "Error, integer too big" << std::endl;
+		else if(!canBeZero && temp == 0)
+			std::cout << "Error, can't be zero" << std::endl;
 		else isCorrect = true;
 	}
 	return temp;
@@ -154,17 +165,16 @@ void Tide::Generate(unsigned int size, unsigned int range)
 {
 	if(size == 0 || range == 0)
 	{
-		size = GetInt("Input the size of the map:", maxsize);
-		range = GetInt("Input the range of the map height values:", maxheight);
+		size = GetInt("Input the size of the map:", maxsize, false);
+		range = GetInt("Input the range of the map height values:", maxheight, false);
 	}
-
-	std::ofstream output("default.txt");
-	output << size << std::endl;
 	unsigned int* buffer = new unsigned int[size * size];
 	for(unsigned int i = 0; i < size*size; ++i)
 	{
 		buffer[i] = rand()%range;
 	}
+	std::ofstream output("default.txt");
+	output << size << std::endl;
 	for(unsigned int i = 0; i < size; ++i)
 	{
 		for(unsigned int j = 0; j < size; ++j)
@@ -173,8 +183,8 @@ void Tide::Generate(unsigned int size, unsigned int range)
 		}
 		output << std::endl;
 	}
-	delete[] buffer;
 	output.close();
+	delete[] buffer;
 }
 
 void Tide::ShellResolve(char choice)
@@ -193,33 +203,34 @@ void Tide::ShellResolve(char choice)
             "   h - Display this help message" << std::endl <<
             "   p - Print loaded data" << std::endl <<
             "   s - Solve and display" << std::endl <<
-            "   b - Brute force solution" << std::endl <<
             "   g - Generate random data to example.txt" << std::endl <<
+            "   l - Solve in a loop, store duration in ../results" << std::endl <<
             "   q - Exit" << std::endl;
 			return;
 		case '1':
 			LoadFromFile("default.txt");
+			std::cout << "Data loaded successfully" << std::endl;
 			return;
 		case '2':
 	    	LoadFromFile("");
+			std::cout << "Data loaded successfully" << std::endl;
             return;
         case '3':
 	    	LoadManually();
+			std::cout << "Data loaded successfully" << std::endl;
             return;
         case 'p':
 	    	Print();
             return;
 		case 'g':
 			Generate();
+			std::cout << "Data generated successfully" << std::endl;
 			return;
 		case 's':
-	    	std::cout << Solve(map, true) << std::endl;
-            return;
-		case 'b':
-	    	std::cout << Solve(map, false) << std::endl;
+	    	std::cout << Solve(map) << std::endl;
             return;
 		case 'l':
-			LogN(true);
+			LogN();
 			return;
         default:
             std::cout << "Unknown command. Try 'h' for help." << std::endl;

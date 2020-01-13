@@ -5,16 +5,21 @@
 Timer::Timer(std::string timerName)
 {
     start = std::chrono::high_resolution_clock::now();
+    name = timerName;
 }
 
 Timer::~Timer()
 {
-    if(running) Stop();
+    if(running)
+    {
+        std::cout << "Timer '" << name << "' stops." << std::endl;
+        std::cout << "It took " << Stop() << "ms " << std::endl;
+    }
 }
 
-void Timer::Stop()
+float Timer::Stop()
 {
     end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> duration = end - start;
-    std::cout << "It took " << duration.count()*1000 << "ms " << std::endl;
+    return duration.count();
 }

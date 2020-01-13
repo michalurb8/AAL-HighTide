@@ -1,11 +1,9 @@
 //Michal Urbanski
 //Zeglowanie w czasie przyplywu
 #include "Solution.h"
-#include "Timer.h"
 
-unsigned int Solution::Brute(unsigned int size, unsigned int* map)
+unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 {
-	Timer bruteTimer("brute solution timer");
 	this->size = size;
 	this->map = map;
 
@@ -22,30 +20,6 @@ unsigned int Solution::Brute(unsigned int size, unsigned int* map)
 		if(CheckTime(temp)) high = temp;
 		else low = temp;
 	}
-
-	unsigned int time = (high + low)/2;
-	while(high - low > 1)//narrow the lower and upper bound until the solution is found
-	{
-		if(CheckTime(time))
-			high = time;
-		else
-			low = time;
-		time = (high + low)/2;
-	}
-	return high;
-}
-unsigned int Solution::Solve(unsigned int size, unsigned int* map)
-{
-	Timer bruteTimer("regular solution timer");
-	this->size = size;
-	this->map = map;
-
-	unsigned int low = 0; //highest not passable time found so far
-	if(low < map[0]) low = map[0] - 1; // is the start tile
-	if(low < map[size * size - 1]) low = map[size * size - 1] - 1; //or the end tile if bigger
-
-	unsigned int high = 0; //lowest passable time found so far 
-	for(unsigned int i = 0; i < size * size; ++i) if(map[i] > high) high = map[i]; //OPTIMIZE???
 
 	unsigned int time = (high + low)/2;
 	while(high - low > 1)//narrow the lower and upper bound until the solution is found
