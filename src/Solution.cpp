@@ -6,6 +6,7 @@ unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 {
 	this->size = size;
 	this->map = map;
+	if(size == 1) return map[0];
 
 	unsigned int low = 0; //highest not passable time found so far
 	if(low < map[0]) low = map[0] - 1; // is the start tile

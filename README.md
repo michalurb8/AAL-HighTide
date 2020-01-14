@@ -1,5 +1,3 @@
-TODO dokumentacja, pomiary czasu, add newlines
-
 # Problem - Żeglowanie w czasie przypływu
 ## Michał Urbański
 
@@ -16,44 +14,33 @@ c - Perform a custom test, results in results.txt <br />
 h - Display this help message <br />
 q - Exit <br />
 
-
-h - Display help <br /> 
-1 - Load data from data.txt file
-2 - Load data from any .txt file
-3 - Load data manually
-p - Print loaded data
-s - Solve and display
-b - Brute force solution
-g - Generate random data to other.txt
-q - Exit
-
 ## Pliki z danymi wejściowymi:
-plik zawiera w pierwszej linii jedną liczbę całkowitą, rozmiar mapy N
-W nastepnych N liniach znajduje się po N liczb całkowitych z zakresu 0-M, elementów mapy
-Przykład zawartości pliku:
-3
-1 0 5
-5 4 3
-2 6 2
+Plik zawiera w pierwszej linii jedną liczbę całkowitą, rozmiar mapy N <br />
+W nastepnych N liniach znajduje się po N liczb całkowitych z zakresu 0-M, elementów mapy <br />
+Przykład zawartości pliku: <br /> <br />
+3 <br />
+1 0 5 <br />
+5 4 3 <br />
+2 6 2 <br /> <br />
 
 ## Metoda rozwiązania:
-Dla danego momentu czasu t sprawdzanie metodą "przejścia wzdłuż prawej ściany" czy przejście jest możliwe.
-Na pewno nie da się przepłynąć przez mapę w czasie krótszym niż wartość wysokości pierwszego i ostatniego pola, więc sprawdzanie zaczyna się od maksimum z tych wartości.
-Następnie sprawdzane są coraz większe (przy każdej iteracji 1.5x większe niż poprzednie) wartości czasu t aż do osiągnięcia takiej, w której przepłynięcie jest możliwe.
-Gdy znana jest taka wartość, binarnie przeszukujemy przestrzeń pomiędzy nią a największą dotychczas znalezioną wartością czasu, w której przejście nie jest możliwe.
-Złożoność czasowa to O(N*log(M)).
-Złożoność pamięciowa to O(1).
+Dla danego momentu czasu t sprawdzanie metodą "przejścia wzdłuż prawej ściany" czy przejście jest możliwe. <br />
+Na pewno nie da się przepłynąć przez mapę w czasie krótszym niż wartość wysokości pierwszego i ostatniego pola, więc sprawdzanie zaczyna się od maksimum z tych wartości. <br />
+Następnie sprawdzane są coraz większe (przy każdej iteracji 1.5x większe niż poprzednie) wartości czasu t aż do osiągnięcia takiej, w której przepłynięcie jest możliwe. <br />
+Gdy znana jest taka wartość, binarnie przeszukujemy przestrzeń pomiędzy nią a największą dotychczas znalezioną wartością czasu, w której przejście nie jest możliwe. <br />
+Złożoność czasowa to O(N*log(M)). <br />
+Złożoność pamięciowa to O(1). <br />
 
 ## Pliki źródłowe programu:
-main.cpp - wywołuje główną metodę klasy Tide
-Tide.cpp, Tide.h - służy komunikacji programu z użytkownikiem i wczytywaniu danych
-Solution.cpp, Solution.h - implementacja algorytmu
+main.cpp - wywołuje główną metodę klasy Tide <br />
+Tide.cpp, Tide.h - służy komunikacji programu z użytkownikiem i wczytywaniu danych <br />
+Solution.cpp, Solution.h - implementacja algorytmu <br />
+Timer.cpp, Timer.h - prosta klasa służąca do pomiaru czasu <br />
 
 ## Założenia:
-Zakres wartości N: 1 - 10^4
-Zakres wartości M: 1 - 10^9
+Zakres wartości N: 1 - 10^9 (testowanie jest realne dla N <= 10^4) <br />
+Zakres wartości M: 1 - 10^9 <br />
 
 
 ## Generatory danych testowych:
-Jeden generuje mapę NxN wartości zupełnie pseudolosowych
-Drugi generuje mapę NxN do testowania przypadków pesymistycznych
+Jeden generuje mapę NxN wartości zupełnie pseudolosowych <br />

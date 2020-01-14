@@ -110,14 +110,16 @@ void Tide::Test(unsigned int iterations, unsigned int range, unsigned int minSiz
 	{
 		iterations = GetInt("Input the number of iterations (100):", maxiter, false);
 		range = GetInt("Input the range of the map height values (1000000000):", maxheight, false);
-		minSize = GetInt("Input the minimal size of the map (1):", maxsize, false);
+		minSize = GetInt("Input the minimal size of the map (8):", maxsize, false);
 		maxSize = GetInt("Input the maximal size of the map (2000):", maxsize, false);
 	}
 	std::ofstream output("results.txt");
 	output << "size range iterations time" << std::endl;
+	std::cout << "Iterations: " << iterations << std::endl;
+	std::cout << "Range: " << range << std::endl;
 	for(unsigned int newSize = minSize; newSize < maxSize; newSize*=2)
 	{
-		std::cout << newSize << std::endl;
+		std::cout << "Now checking size: " << newSize << std::endl;
 		output << newSize << " " << range << " " << iterations << " ";
 		output << SolveN(iterations, newSize, range)/iterations << std::endl;
 	}
@@ -209,7 +211,7 @@ void Tide::ShellResolve(char choice)
             "   p - Print loaded data" << std::endl << std::endl << 
             "   g - Generate random data to default.txt" << std::endl <<
             "   s - Solve and display" << std::endl <<
-            "   l - Solve in a loop, store duration in ../results" << std::endl << std::endl <<
+            "   l - Solve in a loop, show the time" << std::endl << std::endl <<
             "   d - Perform the default test, results in results.txt" << std::endl <<
             "   c - Perform a custom test, results in results.txt" << std::endl << std::endl << 
             "   h - Display this help message" << std::endl <<
@@ -242,7 +244,7 @@ void Tide::ShellResolve(char choice)
 			std::cout << "It took " << temp << "s" << std::endl;
 			return;
         case 'd':
-	    	Test(100, 1000000000, 1, 2000);
+	    	Test(100, 1000000000, 8, 2000);
 			std::cout << "Results in results.txt" << std::endl;
             return;
         case 'c':
