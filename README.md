@@ -4,6 +4,19 @@ TODO dokumentacja, pomiary czasu, add newlines
 ## Michał Urbański
 
 ## Program umożliwia wykonywanie następujących poleceń:
+1 - Load data from default.txt file <br />
+2 - Load data from any .txt file <br />
+3 - Load data manually <br />
+p - Print loaded data <br />
+g - Generate random data to default.txt <br />
+s - Solve and display the result <br />
+l - Solve in a loop, show the time <br />
+d - Perform the default test, results in results.txt <br />
+c - Perform a custom test, results in results.txt <br />
+h - Display this help message <br />
+q - Exit <br />
+
+
 h - Display help <br /> 
 1 - Load data from data.txt file
 2 - Load data from any .txt file

@@ -19,6 +19,7 @@ Timer::~Timer()
 
 float Timer::Stop()
 {
+    running = false;
     end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> duration = end - start;
     return duration.count();

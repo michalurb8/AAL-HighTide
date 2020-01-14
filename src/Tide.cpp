@@ -34,7 +34,7 @@ void Tide::LoadFromFile(std::string fileName)
 	}
 
 	input >> size;
-	Allocate(size);
+	Reallocate(size);
 
 	if(size == 0)
 	{
@@ -58,16 +58,16 @@ void Tide::LoadFromFile(std::string fileName)
 
 void Tide::LoadManually()
 {
-	dataCorrect = true;
 	size = GetInt("Input map's size, N:", maxsize, false);
-	Allocate(size);
+	Reallocate(size);
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
 		map[i] = GetInt("Input next element in the map:", maxheight, true);
 	}
+	dataCorrect = true;
 }
 
-void Tide::Allocate(unsigned int size)
+void Tide::Reallocate(unsigned int size)
 {
 	delete[] map;
 	map = new unsigned int[size * size];
@@ -104,38 +104,43 @@ unsigned int Tide::Solve(unsigned int* map)
 	return problem.Solve(size, map);
 }
 
-void Tide::LogN(unsigned int iterations, unsigned int newSize, unsigned int range)
+void Tide::Test(unsigned int iterations, unsigned int range, unsigned int minSize, unsigned int maxSize)
 {
-	std::string fileName = "./../results/";
+	if(iterations == 0 || range == 0 || minSize == 0 || maxSize == 0)
+	{
+		iterations = GetInt("Input the number of iterations (100):", maxiter, false);
+		range = GetInt("Input the range of the map height values (1000000000):", maxheight, false);
+		minSize = GetInt("Input the minimal size of the map (1):", maxsize, false);
+		maxSize = GetInt("Input the maximal size of the map (2000):", maxsize, false);
+	}
+	std::ofstream output("results.txt");
+	output << "size range iterations time" << std::endl;
+	for(unsigned int newSize = minSize; newSize < maxSize; newSize*=2)
+	{
+		std::cout << newSize << std::endl;
+		output << newSize << " " << range << " " << iterations << " ";
+		output << SolveN(iterations, newSize, range)/iterations << std::endl;
+	}
+	output.close();
+}
+
+float Tide::SolveN(unsigned int iterations, unsigned int newSize, unsigned int range)
+{
 	if(iterations == 0 || newSize == 0 || range == 0)
 	{
 		iterations = GetInt("Input the number of iterations:", maxiter, false);
 		newSize = GetInt("Input the size of the map:", maxsize, false);
 		range = GetInt("Input the range of the map height values:", maxheight, false);
 	}
-	fileName += "size_";
-	fileName += std::to_string(newSize);
-	fileName += "_range_";
-	fileName += std::to_string(range);
-	fileName += "_iter_";
-	fileName += std::to_string(iterations);
-	std::ofstream output(fileName);
-	{
-		Timer timer("Solve in a loop");
-		SolveN(iterations, newSize, range);
-		output << timer.Stop() << " ";
-	}
-	output.close();
-}
-
-void Tide::SolveN(unsigned int iterations, unsigned int newSize, unsigned int range)
-{
+	Timer timer("Solve in a loop");
 	for(unsigned int i = 0; i < iterations; ++i)
 	{
 		Generate(newSize, range);
 		LoadFromFile("default.txt");
 		Solve(map);
 	}
+	float temp = timer.Stop();
+	return temp;
 }
 
 unsigned int Tide::GetInt(std::string prompt, unsigned int max, bool canBeZero)
@@ -189,6 +194,7 @@ void Tide::Generate(unsigned int size, unsigned int range)
 
 void Tide::ShellResolve(char choice)
 {
+	float temp = 0;
     switch(choice)
     {
 	case 'q':
@@ -199,12 +205,14 @@ void Tide::ShellResolve(char choice)
             "Available commands:" << std::endl << std::endl <<
             "   1 - Load data from default.txt file" << std::endl <<
             "   2 - Load data from any .txt file" << std::endl <<
-            "   3 - Load data manually" << std::endl << std::endl <<
-            "   h - Display this help message" << std::endl <<
-            "   p - Print loaded data" << std::endl <<
+            "   3 - Load data manually" << std::endl <<
+            "   p - Print loaded data" << std::endl << std::endl << 
+            "   g - Generate random data to default.txt" << std::endl <<
             "   s - Solve and display" << std::endl <<
-            "   g - Generate random data to example.txt" << std::endl <<
-            "   l - Solve in a loop, store duration in ../results" << std::endl <<
+            "   l - Solve in a loop, store duration in ../results" << std::endl << std::endl <<
+            "   d - Perform the default test, results in results.txt" << std::endl <<
+            "   c - Perform a custom test, results in results.txt" << std::endl << std::endl << 
+            "   h - Display this help message" << std::endl <<
             "   q - Exit" << std::endl;
 			return;
 		case '1':
@@ -227,11 +235,20 @@ void Tide::ShellResolve(char choice)
 			std::cout << "Data generated successfully" << std::endl;
 			return;
 		case 's':
-	    	std::cout << Solve(map) << std::endl;
+	    	std::cout << "Solution: " << Solve(map) << std::endl;
             return;
 		case 'l':
-			LogN();
+			temp = SolveN();
+			std::cout << "It took " << temp << "s" << std::endl;
 			return;
+        case 'd':
+	    	Test(100, 1000000000, 1, 2000);
+			std::cout << "Results in results.txt" << std::endl;
+            return;
+        case 'c':
+	    	Test();
+			std::cout << "Results in results.txt" << std::endl;
+            return;
         default:
             std::cout << "Unknown command. Try 'h' for help." << std::endl;
     }

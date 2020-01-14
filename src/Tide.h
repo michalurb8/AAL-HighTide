@@ -21,13 +21,13 @@ class Tide
     void LoadFromFile(std::string fileName = "data.txt");
     void LoadManually();
 
-    void Allocate(unsigned int size);
+    void Reallocate(unsigned int size);
 
     void Print();
     void Generate(unsigned int size = 0, unsigned int range = 0);
     unsigned int Solve(unsigned int* map);
-    void LogN(unsigned int iterations = 0, unsigned int newSize = 0, unsigned int range = 0);
-    void SolveN(unsigned int iterations = 0, unsigned int newSize = 0, unsigned int range = 0);
+    void Test(unsigned int iter = 0, unsigned int range = 0, unsigned int minSize = 0, unsigned int maxSize = 0);
+    float SolveN(unsigned int iterations = 0, unsigned int newSize = 0, unsigned int range = 0);
     Solution problem;
 public:
     void ShellLoop();
