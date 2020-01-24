@@ -218,7 +218,7 @@ void Tide::ShellResolve(char choice)
             "   g - Generate random data to default.txt" << std::endl <<
             "   s - Solve and display" << std::endl <<
             "   l - Solve in a loop, show the time" << std::endl << std::endl <<
-            "   d - Perform the default size test, results in results.txt" << std::endl <<
+            "   d - Perform the default size test, results in results.txt (takes a long time)" << std::endl <<
             "   c - Perform a custom test, results in results.txt" << std::endl << std::endl << 
             "   h - Display this help message" << std::endl <<
             "   q - Exit" << std::endl;
@@ -250,7 +250,7 @@ void Tide::ShellResolve(char choice)
 			std::cout << "It took " << temp << "s on average" << std::endl;
 			return;
         case 'd':
-	    	Test(10, 1000000000, 8, 5000);
+	    	Test(10, 1000000000, 1, 10000);
 			std::cout << "Results in results.txt" << std::endl;
             return;
         case 'c':
