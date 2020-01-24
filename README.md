@@ -2,9 +2,9 @@
 ## Michał Urbański
 
 ## Program umożliwia wykonywanie następujących poleceń:
-1 - Load data from default.txt file <br />
-2 - Load data from any .txt file <br />
-3 - Load data manually <br />
+x - Load data from default.txt file <br />
+y - Load data from any .txt file <br />
+z - Load data manually <br />
 p - Print loaded data <br />
 g - Generate random data to default.txt <br />
 s - Solve and display the result <br />
@@ -28,8 +28,8 @@ Dla danego momentu czasu t sprawdzanie metodą "przejścia wzdłuż prawej ścia
 Na pewno nie da się przepłynąć przez mapę w czasie krótszym niż wartość wysokości pierwszego i ostatniego pola, więc sprawdzanie zaczyna się od maksimum z tych wartości. <br />
 Następnie sprawdzane są coraz większe (przy każdej iteracji 1.5x większe niż poprzednie) wartości czasu t aż do osiągnięcia takiej, w której przepłynięcie jest możliwe. <br />
 Gdy znana jest taka wartość, binarnie przeszukujemy przestrzeń pomiędzy nią a największą dotychczas znalezioną wartością czasu, w której przejście nie jest możliwe. <br />
-Złożoność czasowa to O(N*log(M)). <br />
-Złożoność pamięciowa to O(1). <br />
+Przewidywana pesymistyczna złożoność czasowa to O(N^2\*log(M)). <br />
+Złożoność pamięciowa to O(N^2). <br />
 
 ## Pliki źródłowe programu:
 main.cpp - wywołuje główną metodę klasy Tide <br />
@@ -42,5 +42,5 @@ Zakres wartości N: 1 - 10^9 (testowanie jest realne dla N <= 10^4) <br />
 Zakres wartości M: 1 - 10^9 <br />
 
 
-## Generatory danych testowych:
-Jeden generuje mapę NxN wartości zupełnie pseudolosowych <br />
+## Generator danych testowych:
+Generator generuje mapę NxN wartości pseudolosowych z zakresu 0-M <br />

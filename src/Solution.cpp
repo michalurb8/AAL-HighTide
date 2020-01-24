@@ -30,11 +30,11 @@ unsigned int Solution::Solve(unsigned int size, unsigned int* map)
 		else
 			low = time;
 		time = (high + low)/2;
-	}
+	}//At this point low is the highest not passable time, high the lowest passable
 	return high;
 }
 
-bool Solution::CheckTime(unsigned int time)
+bool Solution::CheckTime(unsigned int time)//Check if the map can be passed at given time
 {
 	if(map[0] > time) return false;
 	struct // 0 - DOWN, 1 - LEFT, 2 - UP, 3 - RIGHT
@@ -64,7 +64,7 @@ bool Solution::CheckTime(unsigned int time)
 	return false;
 }
 
-bool Solution::StepPossible(int x, int y, unsigned int time)
+bool Solution::StepPossible(int x, int y, unsigned int time) //Check if possible to swim on tile x,y at given time
 {
 	if(x < 0 || y < 0) return false;
 	if((unsigned int)x >= size || (unsigned int)y >= size) return false;
@@ -72,7 +72,7 @@ bool Solution::StepPossible(int x, int y, unsigned int time)
 	return true;
 }
 
-void Swap(unsigned int& a, unsigned int& b)
+void Swap(unsigned int& a, unsigned int& b) //Swap two integers
 {
 	unsigned int swap = a;
 	a = b;

@@ -1,9 +1,9 @@
 //Michal Urbanski
 //Zeglowanie w czasie przyplywu
-#include "Tide.h"
 #include <fstream>
 #include <iostream>
 #include "Timer.h"
+#include "Tide.h"
 
 Tide::Tide()
 {
@@ -18,7 +18,7 @@ Tide::~Tide()
 	delete[] map;
 }
 
-void Tide::LoadFromFile(std::string fileName)
+bool Tide::LoadFromFile(std::string fileName)
 {
 	if(fileName == "")
 	{
@@ -30,9 +30,8 @@ void Tide::LoadFromFile(std::string fileName)
 	if(input.fail())
 	{
 		std::cout << "Such a file does not exist" << std::endl;
-		return;
+		return false;
 	}
-
 	input >> size;
 	Reallocate(size);
 
@@ -40,7 +39,7 @@ void Tide::LoadFromFile(std::string fileName)
 	{
 			input.close();
 			std::cout << "File error, map size cannot be zero" << std::endl;
-			return;
+			return false;
 	}
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
@@ -49,20 +48,21 @@ void Tide::LoadFromFile(std::string fileName)
 		{
 			input.close();
 			std::cout << "File error, dimensions do not match" << std::endl;
-			return;
+			return false;
 		}
 	}
 	input.close();
 	dataCorrect = true;
+	return true;
 }
 
 void Tide::LoadManually()
 {
-	size = GetInt("Input map's size, N:", maxsize, false);
+	size = GetInt("Input map's size, N:", MINSIZE, MAXSIZE);
 	Reallocate(size);
 	for(unsigned int i = 0; i < size * size; ++i)
 	{
-		map[i] = GetInt("Input next element in the map:", maxheight, true);
+		map[i] = GetInt("Input next element in the map:", 0, MAXHEIGHT);
 	}
 	dataCorrect = true;
 }
@@ -108,10 +108,11 @@ void Tide::Test(unsigned int iterations, unsigned int range, unsigned int minSiz
 {
 	if(iterations == 0 || range == 0 || minSize == 0 || maxSize == 0)
 	{
-		iterations = GetInt("Input the number of iterations (100):", maxiter, false);
-		range = GetInt("Input the range of the map height values (1000000000):", maxheight, false);
-		minSize = GetInt("Input the minimal size of the map (8):", maxsize, false);
-		maxSize = GetInt("Input the maximal size of the map (2000):", maxsize, false);
+		iterations = GetInt("Input the number of iterations:", 1, MAXITER);
+		range = GetInt("Input the range of the map height values:", 0, MAXHEIGHT);
+		minSize = GetInt("Input the minimal size of the map:", MINSIZE, MAXSIZE);
+		maxSize = GetInt("Input the maximal size of the map:", MINSIZE, MAXSIZE);
+		if(minSize > maxSize) std::cout << "Warning: minimal size is greater than maximal, returning." << std::endl;
 	}
 	std::ofstream output("results.txt");
 	output << "size range iterations time" << std::endl;
@@ -130,25 +131,30 @@ float Tide::SolveN(unsigned int iterations, unsigned int newSize, unsigned int r
 {
 	if(iterations == 0 || newSize == 0 || range == 0)
 	{
-		iterations = GetInt("Input the number of iterations:", maxiter, false);
-		newSize = GetInt("Input the size of the map:", maxsize, false);
-		range = GetInt("Input the range of the map height values:", maxheight, false);
+		iterations = GetInt("Input the number of iterations:", 1, MAXITER);
+		range = GetInt("Input the range of the map height values:", 0, MAXHEIGHT);
+		newSize = GetInt("Input the size of the map:", MINSIZE, MAXSIZE);
 	}
-	Timer timer("Solve in a loop");
+	float time = 0;
 	for(unsigned int i = 0; i < iterations; ++i)
 	{
 		Generate(newSize, range);
 		LoadFromFile("default.txt");
-		Solve(map);
+		{
+			Timer timer("Solve in a loop");
+			Solve(map);
+			float temp = timer.Stop();
+			time += temp;
+		}
 	}
-	float temp = timer.Stop();
-	return temp;
+	return time/iterations;
 }
 
-unsigned int Tide::GetInt(std::string prompt, unsigned int max, bool canBeZero)
+unsigned int Tide::GetInt(std::string prompt, unsigned int min, unsigned int max)
 {
 	unsigned int temp = 0;
 	bool isCorrect = false;
+	prompt += " (min: " + std::to_string(min) + ", max: " + std::to_string(max) + ")";
 	while(!isCorrect)
 	{
 		std::cout << prompt << std::endl;
@@ -160,9 +166,9 @@ unsigned int Tide::GetInt(std::string prompt, unsigned int max, bool canBeZero)
 			std::cin.ignore();
 		}
 		else if(temp > max)
-			std::cout << "Error, integer too big" << std::endl;
-		else if(!canBeZero && temp == 0)
-			std::cout << "Error, can't be zero" << std::endl;
+			std::cout << "Error, integer too large, max is: " << max << std::endl;
+		else if(temp < min)
+			std::cout << "Error, integer too small, min is: " << min << std::endl;
 		else isCorrect = true;
 	}
 	return temp;
@@ -172,8 +178,8 @@ void Tide::Generate(unsigned int size, unsigned int range)
 {
 	if(size == 0 || range == 0)
 	{
-		size = GetInt("Input the size of the map:", maxsize, false);
-		range = GetInt("Input the range of the map height values:", maxheight, false);
+		size = GetInt("Input the size of the map:", MINSIZE, MAXSIZE);
+		range = GetInt("Input the range of the map height values:", 0, MAXHEIGHT);
 	}
 	unsigned int* buffer = new unsigned int[size * size];
 	for(unsigned int i = 0; i < size*size; ++i)
@@ -205,27 +211,27 @@ void Tide::ShellResolve(char choice)
         case 'h':
             std::cout << std::endl <<
             "Available commands:" << std::endl << std::endl <<
-            "   1 - Load data from default.txt file" << std::endl <<
-            "   2 - Load data from any .txt file" << std::endl <<
-            "   3 - Load data manually" << std::endl <<
+            "   x - Load data from default.txt file" << std::endl <<
+            "   y - Load data from any .txt file" << std::endl <<
+            "   z - Load data manually" << std::endl <<
             "   p - Print loaded data" << std::endl << std::endl << 
             "   g - Generate random data to default.txt" << std::endl <<
             "   s - Solve and display" << std::endl <<
             "   l - Solve in a loop, show the time" << std::endl << std::endl <<
-            "   d - Perform the default test, results in results.txt" << std::endl <<
+            "   d - Perform the default size test, results in results.txt" << std::endl <<
             "   c - Perform a custom test, results in results.txt" << std::endl << std::endl << 
             "   h - Display this help message" << std::endl <<
             "   q - Exit" << std::endl;
 			return;
-		case '1':
-			LoadFromFile("default.txt");
-			std::cout << "Data loaded successfully" << std::endl;
+		case 'x':
+			if(LoadFromFile("default.txt"))
+				std::cout << "Data loaded successfully" << std::endl;
 			return;
-		case '2':
-	    	LoadFromFile("");
-			std::cout << "Data loaded successfully" << std::endl;
+		case 'y':
+	    	if(LoadFromFile(""))
+				std::cout << "Data loaded successfully" << std::endl;
             return;
-        case '3':
+        case 'z':
 	    	LoadManually();
 			std::cout << "Data loaded successfully" << std::endl;
             return;
@@ -241,10 +247,10 @@ void Tide::ShellResolve(char choice)
             return;
 		case 'l':
 			temp = SolveN();
-			std::cout << "It took " << temp << "s" << std::endl;
+			std::cout << "It took " << temp << "s on average" << std::endl;
 			return;
         case 'd':
-	    	Test(100, 1000000000, 8, 2000);
+	    	Test(10, 1000000000, 8, 5000);
 			std::cout << "Results in results.txt" << std::endl;
             return;
         case 'c':

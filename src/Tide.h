@@ -10,15 +10,16 @@ class Tide
     unsigned int size;
     unsigned int* map;
 
-	const unsigned int maxsize = 10000;
-	const unsigned int maxheight = 1000000000;
-	const unsigned int maxiter = 1000;
+	const unsigned int MINSIZE = 1;
+	const unsigned int MAXSIZE = 10000;
+	const unsigned int MAXHEIGHT = 1000000000;
+	const unsigned int MAXITER = 1000;
 
     bool dataCorrect;
     void ShellResolve(char choice);
-    unsigned int GetInt(std::string prompt, unsigned int max, bool canBeZero);
+    unsigned int GetInt(std::string prompt, unsigned int min, unsigned int max);
 
-    void LoadFromFile(std::string fileName = "data.txt");
+    bool LoadFromFile(std::string fileName = "data.txt");
     void LoadManually();
 
     void Reallocate(unsigned int size);
